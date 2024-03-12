@@ -177,17 +177,30 @@ Ten different helper functions in the format \texttt{get\_<field>} parse the  bl
 		\centering
 		\includegraphics[width=\textwidth]{figures/pollux_web_search_bar.png} % First image
 		\caption{View of the search interface on Pollux when searching for "klimakrise".}
-		\label{fig:image1}
+		\label{fig:pollux_web_search_bar}
 	\end{minipage}\hfill
 	\begin{minipage}[t]{0.45\textwidth}
 		\centering
 		\includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png} % Second image
 		\caption{View of a blog entry on Pollux.}
-		\label{fig:image2}
+		\label{fig:pollux_web_blog_entry}
 	\end{minipage}
 \end{figure}
 
-% TODO repo with the python scripts from the pipeline
+\section{Analysis of incorporated Blogs}
+
+
+\begin{figure}[htb]
+	\includegraphics[width=1.0\textwidth]{figures/topic_viz_2d.png}
+	\caption{BERTopic visualization of blog entries incorporated in Pollux. The Scatterplot shows embeddings fof each blog entry reduced to a 2-dimensional space. The summaries of the entries was used to create the embeddings.}
+	\label{fig:topic_viz_2d}
+\end{figure}
+
+\begin{figure}[htb]
+    \includegraphics[width=1.0\textwidth]{figures/topics_over_time.png}
+    \caption{BERTopic visualization of blogs entry topics over time. The topics are based on the summaries of the entries.}
+    \label{fig:topics_over_time.png}
+\end{figure}
 
 \section*{Acknowledgements}
 This work was funded by Deutsche Forschungsgemeinschaft (DFG) under grant number MA 3964/7-2, the POLLUX project.
