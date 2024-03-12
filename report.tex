@@ -1,0 +1,239 @@
+\documentclass{article}
+
+\usepackage{arxiv}
+
+\usepackage[utf8]{inputenc} % allow utf-8 input
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage{hyperref}       % hyperlinks
+\usepackage{url}            % simple URL typesetting
+\usepackage{booktabs}       % professional-quality tables
+\usepackage{amsfonts}       % blackboard ]math symbols
+\usepackage{nicefrac}       % compact symbols for 1/2, etc.
+\usepackage{microtype}      % microtypography
+\usepackage{lipsum}		% Can be removed after putting your text content
+\usepackage{graphicx}
+\usepackage{natbib}
+\usepackage{doi}
+\usepackage{tikz}
+
+\usepackage{listings}
+
+\usetikzlibrary{shapes.geometric, arrows}
+\usetikzlibrary{positioning}
+
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height =1cm,text centered,
+text width=3cm,  draw=black, fill=red!30]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=1cm,
+text width=3cm,  minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm,
+text width=3cm,  minimum height=1cm, text centered, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3cm,
+text width=3cm,  minimum height=1cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+\tikzstyle{request} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered,
+text width=3cm,  draw=black, fill=green!30]
+
+
+\title{Incorporating Blogs in Pollux}
+
+\author{ Tobias Holtdirk\thanks{Corresponding author}\\
+	GESIS -- Leibniz Institute for the Social Sciences\\
+	Unter Sachsenhausen 6-8 \\
+    50667 Köln \\
+	\texttt{tobias.holtdirk@gesis.org}
+}
+
+
+\renewcommand{\headeright}{Technical Report}
+\renewcommand{\undertitle}{Technical Report}
+\renewcommand{\shorttitle}{}
+
+\hypersetup{
+pdftitle={},
+pdfsubject={cs.DL},
+pdfauthor={Tobias Holtdirk},
+pdfkeywords={},
+}
+
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+	Considering the broad usage of political blogs in political science research, we decided to include political blogs and blog posts in the search system of Pollux. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and other information in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs which we incorporated into our collection. Furthermore, the pipeline that handles the integration of blogs in Pollux is described.
+\end{abstract}
+
+
+% keywords can be removed
+\keywords{political blogs \and data crawling \and political science \and social media}
+
+% \section*{Disclaimer}
+% \label{sec:disclaimer}
+% ???
+
+\section{Introduction}
+Political blogs are widely used in political science research \citep{wallsten_agenda_2007, coleman_political_2008, wallsten_political_2008, guner_political_2009, akinnubi_deliberative_2023, peng_role_2023}. \cite{coleman_political_2008} claim that communication through political blogs might enhance responsibility and openness of governance overall. \cite{peng_role_2023} examined the process of opinion formation and evolution through the analysis of a larger social network of political blogs. \cite{wallsten_political_2008} investigated how political bloggers utilize their platforms focusing on their predominant function: expressing opinions, mobilizing, seeking feedback, or disseminating information. \cite{demasi_analysing_2020} studied the usage of political blogs by right politicians for political communication and persuasion. \cite{balakhonskaya_communicative_2020} examined strategies for discrediting opponents in the Russian political blogosphere.
+
+Considering the broad usage of political blogs in political science research, we decided to include political blogs in the search index of Pollux \footnote{\url{https://www.pollux-fid.de/}}. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and information infrastructure in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs we included in our collection. Section 2 explains the generation of the list of RSS feeds used for incorporating blogs in Pollux. Section 3 describes findings from the collected RSS feeds that motivated the decision of how to implement into Pollux. Section 4 provides a detailed description of the procedure that handles the integration of blogs in Pollux.
+
+\section{Sourcing of RSS Feeds}\label{sec:sourcing}
+In this section, the generation of the list of RSS feeds used for incorporating blogs in Pollux is described. A graphical overview of the process is provided in Figure \ref{fig:rss_generation}.
+
+\begin{figure}[htb]
+	\centering
+	\includegraphics[width=.7\textwidth]{figures/generation_of_initial_list.png}
+	\caption{Pipeline for initial blog list generation.}
+	\label{fig:rss_generation}
+\end{figure}
+
+% url list
+We use lists of URLs with relevant political science blogs provided by SUUB and GESIS. The list are parsed, tested for dead links and then filtered to deduplicate and fix subdomain inconsistencies between the lists.
+
+% rss list automatic
+To get a RSS list from the URL list we design a Python script for identifying RSS feeds on webpages. It reads a list of URLs from a CSV file, sends a GET request to each URL, and uses a regular expression to find any RSS feed links in the HTML of the page. The regular expression is designed to match the \texttt{href} attribute of link elements with \texttt{rel="alternate"} and \texttt{type="application/rss+xml"}, which is a common way to specify an RSS feed on a webpage. Finally, a dictionary containing the original URL, the response status code, the content type of the response, and the list of RSS feed links. This is written to a JSON file, which is used for the analysis of the RSS feeds, as well as, the later integration into the Pollux database.
+
+% rss list manual
+After the automatic rss feed detection, the remaining feed is checked manually. Like in the automatic checking the HTML of the URL is used. We looks for boarder patterns like an "rss" string appearing in a link on the page. After that, we check the remaining URLs by visiting the website and searching for visual information like a RSS feed logo. The additional RSS feeds identified this way are added to the automatically detected ones, providing a JSON file as seen in Figure \ref{code:rss_list_json}.
+\begin{figure}[htb]
+	\includegraphics[width=.7\textwidth]{figures/rss_list_json.png}
+	\caption{Two entries in JSON after retrieving RSS feeds from URLs.}
+	\label{code:rss_list_json}
+\end{figure}
+% \begin{verbatim}
+% [
+% 	{
+% 		"url": "http://blog.yalebooks.com/category/current-affairs/political-science/",
+% 		"status_code": 200,
+% 		"content_type": "text/html; charset=UTF-8",
+% 		"rss_links": [
+% 			"https://yalebooks.yale.edu/category/current-affairs/political-science/feed/",
+% 			"https://yalebooks.yale.edu/feed/",
+% 			"https://yalebooks.yale.edu/comments/feed/"
+% 		]
+% 	},
+% 	{
+% 		"url": "http://www.demokratie-goettingen.de/verzeichnis/blog",
+% 		"status_code": 200.0,
+% 		"content_type": "text/html; charset=UTF-8",
+% 		"rss_links": [
+% 			"https://www.demokratie-goettingen.de/verzeichnis/blog/feed"
+% 		],
+% 	},
+% 	[...]
+% ]
+% \end{verbatim}
+
+% downloading
+To analyze the feeds later, we downloaded the rss feeds each week for seven months from July 2022 to February 2023. We designed a Python script for this propose that was run every week. The script downloads and save RSS feeds from the list generated earlier. The feed content is saved, as well as, metadata like the timestamp, status code, and content type. If an error occurs during a request, the accompanying error message is stored.
+
+\section{Analysis of Initial Blog Data}\label{sec:analysis}
+
+After generating the initial feed data, we analyzed the resulting 290 feeds and the total of 22,739 entries to identify which metadata is available and to assess the quality of the available metadata.
+
+% feed level
+% feed structure included later: title, language, subtitle (used as abstract), link (for access option)
+For an overview of the feed-level data that we parsed from the RSS feed, see Table \ref{tab:feed_structure}.
+At the feed level, not much metadata is transmitted. However, the metadata that is available is included in almost all feeds and can therefore be used for information in Pollux. The fields mostly contained high-quality data, with only the \textit{subtitle} field showing some inconsistencies, as some feeds had considerably longer entries than others. Therefore, we were able to use all the shown field data in the Pollux integration.
+\begin{table}[htb]
+    \caption{\textbf{Feed Structure.} XML elements (fields) that were most often included in the RSS responses at the feed level.}
+    \centering
+    \begin{tabular}{lrl}
+        \toprule
+        \cmidrule(r){1-2}
+        \textbf{Field} & \textbf{Inclusion} & \textbf{Example}                                   \\
+        \midrule
+        title          & 100\%              & \verb|PoliSciZurich                              | \\
+        subtitle       & 99\%               & \verb|A blog by political scientists in Zurich   | \\
+        blog url       & 100\%              & \verb|https://poliscizurich.wordpress.com        | \\
+        rss url        & 100\%              & \verb|https://poliscizurich.wordpress.com/feed/  | \\
+        last updated   & 92\%               & \verb|Wed, 17 Aug 2016 03:54:00 +0000            | \\
+        language       & 89\%               & \verb|en-US|                                       \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:feed_structure}
+\end{table}
+
+% entry level
+% entry structure: title, author, publication date, link (for access option), summary for abstracts, 
+For an overview of the entry-level data that we parsed from the RSS feed, see Table \ref{tab:entry_structure}. The entry level has more metadata available, even including a field for the content of the blog. However, the quality and availability of data are worse. The \textit{title} is always available and has mostly good quality, with some titles being overly long and some not including the actual title but rather a "not available" statement. Important metadata like \textit{link} and \textit{publication date} had good quality as well. Other data was more spotty; \textit{content} often includes HTML artifacts and had very inconsistent content, with some entries having their entire blog post in the field and others just the first sentence. On the other hand, the \textit{summary} field is available for all entries and has more consistent quality. Therefore, we use the summary rather than the content as the displayed "abstract" in Pollux. The \textit{tags} and \textit{comments} fields provide interesting metadata. With tags, the blog entries can be categorized into different subsets, and comments can be used to build some kind of popularity metric. However, comments have a very low inclusion rate at 33\% and are therefore not reliable enough for a metric, and the amount and kind of tags differ heavily for different entries, making them less useful than an automatic topic generation based on the summary.
+\begin{table}[htb]
+    \caption{\textbf{Entry Structure.} XML elements (fields) that were most often included in the RSS responses at the entry level.}
+    \centering
+    \begin{tabular}{lrl}
+        \toprule
+        \cmidrule(r){1-2}
+        \textbf{Field}   & \textbf{Inclusion} & \textbf{Example}                                          \\
+        \midrule
+        title            & 100\%             & \verb|The 2022 Midterms: In the Senate elections, [...] | \\
+        id               & 100\%             & \verb|https://blogs.lse.ac.uk/usappblog/?p=47109        | \\
+        link             & 100\%             & \verb|https://blogs.lse.ac.uk/usappblog/2022/11/  [...] | \\
+        publication date & 96\%              & \verb|2022-11-16 09:57:58|                                \\
+        authors          & 84\%              & \verb|Blog|                                               \\
+        summary          & 100\%             & \verb|In this year\&\#8217;s midterm elections,   [...] | \\
+        content          & 65\%              & \verb|a class="a2a_button_twitter" href="https: [...] | \\
+        tags             & 65\%              & \verb|2022 Midterms’, 'Elections and party politi [...] | \\
+        comments         & 33\%              & \verb|https://blogs.lse.ac.uk/usappblog/2022/11/16[...] | \\
+        \bottomrule
+    \end{tabular}
+    \label{tab:entry_structure}
+\end{table}
+
+% implementation idea
+Since we have high-quality data both at the feed and entry levels, we can use them for two distinct types of records in Pollux. As Pollux is designed as a database for academic research, we can use the preexisting structure of paper and journal records as a template for blog entry and feed records.
+
+
+\section{Incorporation into the Pollux Pipeline}\label{sec:incorporation}
+
+In this section, a detailed description of the pipeline that handles the integration of blogs in Pollux is provided.
+
+\subsection{Downloading RSS Feeds}
+
+The Python script, \texttt{rss\_downloader.py} is designed to download and store RSS feeds from a list of URLs. It does this through a series of functions that each handle a specific part of the process.
+
+The \texttt{run} function is the main function that get called to initiate the process. It reads in a list of RSS feed URLs, shuffles the list to avoid querying the same domain consecutively, and then attempts to download each feed. If a feed is successfully downloaded, its metadata is stored. If a feed cannot be downloaded, its URL is added to a list of error URLs. The function then saves the metadata of all downloaded feeds to a JSON file and returns a \texttt{Result} object containing metrics about the number of feeds downloaded and the number of errors, as well as the error URLs.
+
+Multiple helper functions are used in the process. The \texttt{extract\_feed\_urls} function reads in a JSON file containing blog information and extracts a list of unique RSS feed URLs. It expects the JSON file to contain a list of dictionaries, each with a key \texttt{rss\_links} that maps to a list of URLs. The function returns the list of unique URLs.
+
+The \texttt{load\_rss} function handles the HTTP request that attempts to download an RSS feed from a given URL and save it to a specified directory. It first sends a GET request to the URL. If the response's content type is not XML, the function raises a ValueError. Otherwise, it saves the response's content to a file in the specified directory and returns a dictionary containing the URL, the timestamp of the download, the filename, the status code of the response, and the content type.
+
+The \texttt{get} function handles the GET request used above. It sends a GET request to a given URL with specified headers and URL parameters. If the request is successful and the status code of the response is OK, the function returns the response. If the status code is a client error (400-499), the function raises a ValueError. If the status code is a server error (500-599), the function waits for a certain amount of time and then tries to send the request again. If the request fails three times, the function raises a ValueError.
+
+\subsection{Converting RSS Feeds}
+
+The Python script, \texttt{rss\_converter.py}, is designed to parse and convert RSS feeds and their entries into a the format used by Pollux entries. It does this through a series of functions that each handle a specific part of the process.
+
+The \texttt{run} function is the main function that get called to initiate the process. It reads in a dump of RSS feeds, parses the feeds and their entries, splits the feeds and entries into blog and comment data, converts the blog feeds and entries into a specific format, and returns the converted data along with some metrics and logs.
+
+The \texttt{parse\_rss\_dump} function parses the RSS feeds and their entries. It adds additional information from the metadata to each feed and entry.
+The \texttt{split\_comments} function separates the blog data from the comment data based on the URL of the feed or entry.
+
+The \texttt{convert\_feed} and \texttt{convert\_entry} functions convert a feed or an entry into the Pollux entry format. They call several helper functions to get specific pieces of information from the feed or entry.
+Ten different helper functions in the format \texttt{get\_<field>} parse the  blog information. For example, the \texttt{get\_languages} function converts the BCP 47 language code found in the RSS to an ISO 639-3 language code. For detailed information of the function see the accompanying source code.
+
+% representation on the pollux website
+
+\begin{figure}[ht]
+	\centering
+	\begin{minipage}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/pollux_web_search_bar.png} % First image
+		\caption{View of the search interface on Pollux when searching for "klimakrise".}
+		\label{fig:image1}
+	\end{minipage}\hfill
+	\begin{minipage}[t]{0.45\textwidth}
+		\centering
+		\includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png} % Second image
+		\caption{View of a blog entry on Pollux.}
+		\label{fig:image2}
+	\end{minipage}
+\end{figure}
+
+% TODO repo with the python scripts from the pipeline
+
+\section*{Acknowledgements}
+This work was funded by Deutsche Forschungsgemeinschaft (DFG) under grant number MA 3964/7-2, the POLLUX project.
+
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+\end{document}
