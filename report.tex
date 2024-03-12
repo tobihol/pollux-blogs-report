@@ -14,25 +14,6 @@
 \usepackage{graphicx}
 \usepackage{natbib}
 \usepackage{doi}
-% \usepackage{tikz}
-
-% \usepackage{listings}
-
-% \usetikzlibrary{shapes.geometric, arrows}
-% \usetikzlibrary{positioning}
-
-% \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height =1cm,text centered,
-% text width=3cm,  draw=black, fill=red!30]
-% \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=1cm,
-% text width=3cm,  minimum height=1cm, text centered, draw=black, fill=blue!30]
-% \tikzstyle{process} = [rectangle, minimum width=3cm,
-% text width=3cm,  minimum height=1cm, text centered, draw=black, fill=orange!30]
-% \tikzstyle{decision} = [diamond, minimum width=3cm,
-% text width=3cm,  minimum height=1cm, text centered, draw=black, fill=green!30]
-% \tikzstyle{arrow} = [thick,->,>=stealth]
-% \tikzstyle{request} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered,
-% text width=3cm,  draw=black, fill=green!30]
-
 
 \title{Incorporating Blogs in Pollux}
 
@@ -56,7 +37,7 @@
 \hypersetup{
 pdftitle={Technical Report: Incorporating Blogs in Pollux},
 pdfsubject={cs.DL},
-pdfauthor={Tobias Holtdirk},
+pdfauthor={Tobias Holtdirk, Nina Smirnova},
 pdfkeywords={political blogs, data crawling, political science, social media},
 }
 
@@ -100,29 +81,6 @@ After the automatic rss feed detection, the remaining feed is checked manually. 
 	\caption{Two entries in JSON after retrieving RSS feeds from URLs.}
 	\label{code:rss_list_json}
 \end{figure}
-% \begin{verbatim}
-% [
-% 	{
-% 		"url": "http://blog.yalebooks.com/category/current-affairs/political-science/",
-% 		"status_code": 200,
-% 		"content_type": "text/html; charset=UTF-8",
-% 		"rss_links": [
-% 			"https://yalebooks.yale.edu/category/current-affairs/political-science/feed/",
-% 			"https://yalebooks.yale.edu/feed/",
-% 			"https://yalebooks.yale.edu/comments/feed/"
-% 		]
-% 	},
-% 	{
-% 		"url": "http://www.demokratie-goettingen.de/verzeichnis/blog",
-% 		"status_code": 200.0,
-% 		"content_type": "text/html; charset=UTF-8",
-% 		"rss_links": [
-% 			"https://www.demokratie-goettingen.de/verzeichnis/blog/feed"
-% 		],
-% 	},
-% 	[...]
-% ]
-% \end{verbatim}
 
 % downloading
 To analyze the feeds later, we downloaded the rss feeds each week for seven months from July 2022 to February 2023. We designed a Python script for this propose that was run every week. The script downloads and save RSS feeds from the list generated earlier. The feed content is saved, as well as, metadata like the timestamp, status code, and content type. If an error occurs during a request, the accompanying error message is stored.
