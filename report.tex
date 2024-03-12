@@ -14,45 +14,50 @@
 \usepackage{graphicx}
 \usepackage{natbib}
 \usepackage{doi}
-\usepackage{tikz}
+% \usepackage{tikz}
 
-\usepackage{listings}
+% \usepackage{listings}
 
-\usetikzlibrary{shapes.geometric, arrows}
-\usetikzlibrary{positioning}
+% \usetikzlibrary{shapes.geometric, arrows}
+% \usetikzlibrary{positioning}
 
-\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height =1cm,text centered,
-text width=3cm,  draw=black, fill=red!30]
-\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=1cm,
-text width=3cm,  minimum height=1cm, text centered, draw=black, fill=blue!30]
-\tikzstyle{process} = [rectangle, minimum width=3cm,
-text width=3cm,  minimum height=1cm, text centered, draw=black, fill=orange!30]
-\tikzstyle{decision} = [diamond, minimum width=3cm,
-text width=3cm,  minimum height=1cm, text centered, draw=black, fill=green!30]
-\tikzstyle{arrow} = [thick,->,>=stealth]
-\tikzstyle{request} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered,
-text width=3cm,  draw=black, fill=green!30]
+% \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height =1cm,text centered,
+% text width=3cm,  draw=black, fill=red!30]
+% \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=1cm,
+% text width=3cm,  minimum height=1cm, text centered, draw=black, fill=blue!30]
+% \tikzstyle{process} = [rectangle, minimum width=3cm,
+% text width=3cm,  minimum height=1cm, text centered, draw=black, fill=orange!30]
+% \tikzstyle{decision} = [diamond, minimum width=3cm,
+% text width=3cm,  minimum height=1cm, text centered, draw=black, fill=green!30]
+% \tikzstyle{arrow} = [thick,->,>=stealth]
+% \tikzstyle{request} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered,
+% text width=3cm,  draw=black, fill=green!30]
 
 
 \title{Incorporating Blogs in Pollux}
 
-\author{ Tobias Holtdirk\thanks{Corresponding author}\\
+\author{Tobias Holtdirk\thanks{Corresponding author}\\
 	GESIS -- Leibniz Institute for the Social Sciences\\
 	Unter Sachsenhausen 6-8 \\
     50667 Köln \\
-	\texttt{tobias.holtdirk@gesis.org}
+	\texttt{tobias.holtdirk@mailbox.org}
+    \And 
+    Nina Smirnova\\
+	GESIS -- Leibniz Institute for the Social Sciences\\
+	Unter Sachsenhausen 6-8 \\
+    50667 Köln \\
+	\texttt{nina.smirnova@gesis.org}
 }
-
 
 \renewcommand{\headeright}{Technical Report}
 \renewcommand{\undertitle}{Technical Report}
-\renewcommand{\shorttitle}{}
+\renewcommand{\shorttitle}{Incorporating Blogs in Pollux}
 
 \hypersetup{
-pdftitle={},
+pdftitle={Technical Report: Incorporating Blogs in Pollux},
 pdfsubject={cs.DL},
 pdfauthor={Tobias Holtdirk},
-pdfkeywords={},
+pdfkeywords={political blogs, data crawling, political science, social media},
 }
 
 
@@ -66,10 +71,6 @@ pdfkeywords={},
 
 % keywords can be removed
 \keywords{political blogs \and data crawling \and political science \and social media}
-
-% \section*{Disclaimer}
-% \label{sec:disclaimer}
-% ???
 
 \section{Introduction}
 Political blogs are widely used in political science research \citep{wallsten_agenda_2007, coleman_political_2008, wallsten_political_2008, guner_political_2009, akinnubi_deliberative_2023, peng_role_2023}. \cite{coleman_political_2008} claim that communication through political blogs might enhance responsibility and openness of governance overall. \cite{peng_role_2023} examined the process of opinion formation and evolution through the analysis of a larger social network of political blogs. \cite{wallsten_political_2008} investigated how political bloggers utilize their platforms focusing on their predominant function: expressing opinions, mobilizing, seeking feedback, or disseminating information. \cite{demasi_analysing_2020} studied the usage of political blogs by right politicians for political communication and persuasion. \cite{balakhonskaya_communicative_2020} examined strategies for discrediting opponents in the Russian political blogosphere.
