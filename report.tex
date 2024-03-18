@@ -59,7 +59,7 @@ Political blogs are widely used in political science research \citep{wallsten_ag
 Considering the broad usage of political blogs in political science research, we decided to include political blogs in the search index of Pollux \footnote{\url{https://www.pollux-fid.de/}}. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and information infrastructure in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs we included in our collection. Section 2 explains the generation of the list of RSS feeds used for incorporating blogs in Pollux. Section 3 describes findings from the collected RSS feeds that motivated the decision of how to implement into Pollux. Section 4 provides a detailed description of the procedure that handles the integration of blogs in Pollux.
 
 \section{Sourcing of RSS Feeds}\label{sec:sourcing}
-In this section, the generation of the list of RSS feeds used for incorporating blogs in Pollux is described. A graphical overview of the process is provided in Figure \ref{fig:rss_generation}.
+In this section, the generation of the list of RSS feeds used for incorporating blogs in Pollux is described. A graphical overview of the process is provided in \autoref{fig:rss_generation}.
 
 \begin{figure}[htb]
 	\centering
@@ -75,7 +75,7 @@ We use lists of URLs with relevant political science blogs provided by SUUB and 
 To get a RSS list from the URL list we design a Python script for identifying RSS feeds on webpages. It reads a list of URLs from a CSV file, sends a GET request to each URL, and uses a regular expression to find any RSS feed links in the HTML of the page. The regular expression is designed to match the \texttt{href} attribute of link elements with \texttt{rel="alternate"} and \texttt{type="application/rss+xml"}, which is a common way to specify an RSS feed on a webpage. Finally, a dictionary containing the original URL, the response status code, the content type of the response, and the list of RSS feed links. This is written to a JSON file, which is used for the analysis of the RSS feeds, as well as, the later integration into the Pollux database.
 
 % rss list manual
-After the automatic rss feed detection, the remaining feed is checked manually. Like in the automatic checking the HTML of the URL is used. We looks for boarder patterns like an "rss" string appearing in a link on the page. After that, we check the remaining URLs by visiting the website and searching for visual information like a RSS feed logo. The additional RSS feeds identified this way are added to the automatically detected ones, providing a JSON file as seen in Figure \ref{code:rss_list_json}.
+After the automatic rss feed detection, the remaining feed is checked manually. Like in the automatic checking the HTML of the URL is used. We looks for boarder patterns like an "rss" string appearing in a link on the page. After that, we check the remaining URLs by visiting the website and searching for visual information like a RSS feed logo. The additional RSS feeds identified this way are added to the automatically detected ones, providing a JSON file as seen in \autoref{code:rss_list_json}.
 \begin{figure}[htb]
 	\includegraphics[width=.7\textwidth]{figures/rss_list_json.png}
 	\caption{Two entries in JSON after retrieving RSS feeds from URLs.}
@@ -91,7 +91,7 @@ After generating the initial feed data, we analyzed the resulting 290 feeds and 
 
 % feed level
 % feed structure included later: title, language, subtitle (used as abstract), link (for access option)
-For an overview of the feed-level data that we parsed from the RSS feed, see Table \ref{tab:feed_structure}.
+For an overview of the feed-level data that we parsed from the RSS feed, see \autoref{tab:feed_structure}.
 At the feed level, not much metadata is transmitted. However, the metadata that is available is included in almost all feeds and can therefore be used for information in Pollux. The fields mostly contained high-quality data, with only the \textit{subtitle} field showing some inconsistencies, as some feeds had considerably longer entries than others. Therefore, we were able to use all the shown field data in the Pollux integration.
 \begin{table}[htb]
     \caption{\textbf{Feed Structure.} XML elements (fields) that were most often included in the RSS responses at the feed level.}
@@ -114,7 +114,7 @@ At the feed level, not much metadata is transmitted. However, the metadata that 
 
 % entry level
 % entry structure: title, author, publication date, link (for access option), summary for abstracts, 
-For an overview of the entry-level data that we parsed from the RSS feed, see Table \ref{tab:entry_structure}. The entry level has more metadata available, even including a field for the content of the blog. However, the quality and availability of data are worse. The \textit{title} is always available and has mostly good quality, with some titles being overly long and some not including the actual title but rather a "not available" statement. Important metadata like \textit{link} and \textit{publication date} had good quality as well. Other data was more spotty; \textit{content} often includes HTML artifacts and had very inconsistent content, with some entries having their entire blog post in the field and others just the first sentence. On the other hand, the \textit{summary} field is available for all entries and has more consistent quality. Therefore, we use the summary rather than the content as the displayed "abstract" in Pollux. The \textit{tags} and \textit{comments} fields provide interesting metadata. With tags, the blog entries can be categorized into different subsets, and comments can be used to build some kind of popularity metric. However, comments have a very low inclusion rate at 33\% and are therefore not reliable enough for a metric, and the amount and kind of tags differ heavily for different entries, making them less useful than an automatic topic generation based on the summary.
+For an overview of the entry-level data that we parsed from the RSS feed, see \autoref{tab:entry_structure}. The entry level has more metadata available, even including a field for the content of the blog. However, the quality and availability of data are worse. The \textit{title} is always available and has mostly good quality, with some titles being overly long and some not including the actual title but rather a "not available" statement. Important metadata like \textit{link} and \textit{publication date} had good quality as well. Other data was more spotty; \textit{content} often includes HTML artifacts and had very inconsistent content, with some entries having their entire blog post in the field and others just the first sentence. On the other hand, the \textit{summary} field is available for all entries and has more consistent quality. Therefore, we use the summary rather than the content as the displayed "abstract" in Pollux. The \textit{tags} and \textit{comments} fields provide interesting metadata. With tags, the blog entries can be categorized into different subsets, and comments can be used to build some kind of popularity metric. However, comments have a very low inclusion rate at 33\% and are therefore not reliable enough for a metric, and the amount and kind of tags differ heavily for different entries, making them less useful than an automatic topic generation based on the summary.
 \begin{table}[htb]
     \caption{\textbf{Entry Structure.} XML elements (fields) that were most often included in the RSS responses at the entry level.}
     \centering
@@ -169,7 +169,42 @@ The \texttt{split\_comments} function separates the blog data from the comment d
 The \texttt{convert\_feed} and \texttt{convert\_entry} functions convert a feed or an entry into the Pollux entry format. They call several helper functions to get specific pieces of information from the feed or entry.
 Ten different helper functions in the format \texttt{get\_<field>} parse the  blog information. For example, the \texttt{get\_languages} function converts the BCP 47 language code found in the RSS to an ISO 639-3 language code. For detailed information of the function see the accompanying source code.
 
-% representation on the pollux website
+\section{Analysis of incorporated Blogs}
+
+% analysis from - until:
+After the integration of the pipeline into Pollux (see \autoref{appendix:website} Website integration), we analyze the incorporated Blogs. Integration started July 2023 and we analyze Blog entries until October 2023. We analyze the topics of the blogs entries by fitting a topic model on the \texttt{summary} field of the entries. Before, the fitting we translated all summaries into english to make the topic model, as we want to focus on the areas the blogs cover as opposed to language difference. We additionally use the \texttt{publication date} field to visualize topics over time.
+
+\paragraph{BERTopic.} 
+BERTopics \citep{grootendorstBERTopicNeuralTopic2022} is a topic modeling technique that combines BERT (Bidirectional Encoder Representations from Transformers) with classical topic modeling methods. It leverages the power of BERT embeddings to represent documents and then applies topic modeling algorithms to discover latent topics within the document collection.
+BERTopics provides several methods to visualize the discovered topics and the documents associated with them. We visualize document level relationships and topics over time.
+
+\paragraph{Document visualization.}
+Using the fitted topic model we visualize the documents in the context of the discovered topics, see \autoref{fig:topic_viz_2d}. We plot the documents in a two-dimensional space, where each document is represented as a point. The position of the documents is determined by their topic distribution, so documents with similar topic distributions will be clustered together. This visualization helps in understanding the relationships between documents based on their topic assignments. We can see that the upper halve of the visualization is dominated by US-centric topics like the supreme court, monetary policy, and advanced in AI. The middle includes topics as the corona virus and climate change, which matter globally. The bottom halve includes topics concerning the European Union, german newspapers and the war in ukraine, which are more relevant in Europe.
+
+\begin{figure}[!htb]
+	\includegraphics[width=1.0\textwidth]{figures/topic_viz_2d.png}
+	\caption{BERTopic visualization of blog entries incorporated in Pollux. The Scatterplot shows embeddings for each blog entry reduced to a 2-dimensional space. The summaries of the entries was used to create the embeddings. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topic_viz_2d.html})}
+	\label{fig:topic_viz_2d}
+\end{figure}
+
+\paragraph{Over time visualization.}
+We use the publication date of the blog entries to show the trend of topics over time, see \autoref{fig:topics_over_time.png}. The dates are grouped into two month intervals the make the plot more interpretable. The number of blogs included for dates before the incorporation into Pollux differs from blog to blog, as the number of records per RSS request is individual for each feed and the frequency of new blogs per feed varies widely. For the visualization we pick topics that should vary in relevance over time. We see that the blogs cover important political events like the corona pandemic or the war in ukraine. We see the expected temporal development, where covid is the dominating topi throughout 2020 and 2021 and with events like the russian invasion of ukraine spiking at the start of 2022 and the AI related blogs increasing around the time of the release of ChatGPT in November 2022.
+
+\begin{figure}[!htb]
+    \includegraphics[width=1.0\textwidth]{figures/topics_over_time.png}
+    \caption{BERTopic visualization of blogs entry topics over time. The topics are based on the summaries of the entries. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topics_over_time.html})}
+    \label{fig:topics_over_time.png}
+\end{figure}
+
+\section*{Acknowledgements}
+This work was funded by Deutsche Forschungsgemeinschaft (DFG) under grant number MA 3964/7-2, the POLLUX project.
+
+
+\bibliographystyle{unsrtnat}
+\bibliography{references}
+
+\appendix
+\section{Representation of Blogs on the Pollux Website}\label{appendix:website}
 
 \begin{figure}[ht]
 	\centering
@@ -187,25 +222,4 @@ Ten different helper functions in the format \texttt{get\_<field>} parse the  bl
 	\end{minipage}
 \end{figure}
 
-\section{Analysis of incorporated Blogs}
-
-
-\begin{figure}[htb]
-	\includegraphics[width=1.0\textwidth]{figures/topic_viz_2d.png}
-	\caption{BERTopic visualization of blog entries incorporated in Pollux. The Scatterplot shows embeddings fof each blog entry reduced to a 2-dimensional space. The summaries of the entries was used to create the embeddings. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topic_viz_2d.html})}
-	\label{fig:topic_viz_2d}
-\end{figure}
-
-\begin{figure}[htb]
-    \includegraphics[width=1.0\textwidth]{figures/topics_over_time.png}
-    \caption{BERTopic visualization of blogs entry topics over time. The topics are based on the summaries of the entries. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topics_over_time.html})}
-    \label{fig:topics_over_time.png}
-\end{figure}
-
-\section*{Acknowledgements}
-This work was funded by Deutsche Forschungsgemeinschaft (DFG) under grant number MA 3964/7-2, the POLLUX project.
-
-
-\bibliographystyle{unsrtnat}
-\bibliography{references}
 \end{document}
