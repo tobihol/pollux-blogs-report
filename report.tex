@@ -169,12 +169,10 @@ The \texttt{parse\_rss\_dump} function parses the RSS feeds and their entries. I
 The \texttt{split\_comments} function separates the blog data from the comment data based on the URL of the feed or entry.
 
 The \texttt{convert\_feed} and \texttt{convert\_entry} functions convert a feed or an entry into the Pollux entry format. They call several helper functions to get specific pieces of information from the feed or entry.
-Ten different helper functions in the format \texttt{get\_<field>} parse the  blog information. For example, the \texttt{get\_languages} function converts the BCP 47 language code found in the RSS to an ISO 639-3 language code. For detailed information of the function see the accompanying source code.
+Ten different helper functions in the format \texttt{get\_<field>} parse the blog information. For example, the \texttt{get\_languages} function converts the BCP 47 language code found in the RSS to an ISO 639-3 language code. For detailed information of the function see the accompanying source code.
 
-\section{Analysis of incorporated Blogs}
-
-% analysis from - until:
-After the integration of the pipeline into Pollux (see \autoref{appendix:website} Website integration), we analyze the incorporated Blogs. Integration started July 2023 and we analyze Blog entries until October 2023. We analyze the topics of the blogs entries by fitting a topic model on the \texttt{summary} field of the entries. Before, the fitting we translated all summaries into english to make the topic model, as we want to focus on the areas the blogs cover as opposed to language difference. We additionally use the \texttt{publication date} field to visualize topics over time.
+\section{Analysis of incorporated Blogs Posts}
+After the integration of the pipeline into Pollux (see \autoref{appendix:website} and \citet{czolkoss-hettwerPolitikwissenschaftlicheBlogsSichtbar2023} for the website layout), we analyze the incorporated Blogs. Integration started in July 2023 and we analyze Blog entries until October 2023. We analyze the topics of the blogs entries by fitting a topic model on the \texttt{summary} field of the entries. Before, the fitting we translated all summaries into English to make the topic model, as we want to focus on the areas the blogs cover as opposed to language difference. We additionally use the \texttt{publication date} field to visualize topics over time.
 
 \paragraph{BERTopic.} 
 BERTopics \citep{grootendorstBERTopicNeuralTopic2022} is a topic modeling technique that combines BERT (Bidirectional Encoder Representations from Transformers) with classical topic modeling methods. It leverages the power of BERT embeddings to represent documents and then applies topic modeling algorithms to discover latent topics within the document collection.
@@ -200,26 +198,23 @@ We use the publication date of the blog entries to show the trend of topics over
 
 \section*{Acknowledgements}
 This work was funded by Deutsche Forschungsgemeinschaft (DFG) under grant number MA 3964/7-2, the POLLUX project.
-
+We thank Marie-Saphira Flug for supporting and reviewing the process of integrating the blogs pipeline into Pollux.
+We thank \href{https://orcid.org/0000-0002-6656-1658}{\includegraphics[scale=0.06]{orcid.pdf}Philipp Mayr} for motivating and supporting the write-up of this technical report.
 \printbibliography
 
 \appendix
 \section{Representation of Blogs on the Pollux Website}\label{appendix:website}
 
 \begin{figure}[ht]
-	\centering
-	\begin{minipage}[t]{0.45\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{figures/pollux_web_search_bar.png} % First image
-		\caption{View of the search interface on Pollux when searching for "klimakrise".}
-		\label{fig:pollux_web_search_bar}
-	\end{minipage}\hfill
-	\begin{minipage}[t]{0.45\textwidth}
-		\centering
-		\includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png} % Second image
-		\caption{View of a blog entry on Pollux.}
-		\label{fig:pollux_web_blog_entry}
-	\end{minipage}
+    \includegraphics[width=\textwidth]{figures/pollux_web_search_bar.png} % First image
+    \caption{View of the search interface on Pollux when searching for "klimakrise".}
+    \label{fig:pollux_web_search_bar}
+\end{figure}
+
+\begin{figure}[ht]
+   \includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png} % Second image
+    \caption{View of a blog entry on Pollux.}
+    \label{fig:pollux_web_blog_entry}
 \end{figure}
 
 \end{document}
