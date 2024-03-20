@@ -3,17 +3,26 @@
 \usepackage{arxiv}
 
 \usepackage[utf8]{inputenc} % allow utf-8 input
-\usepackage[T1]{fontenc}    % use 8-bit T1 fonts
+\usepackage[T1]{fontenc}    % use 8-bit T1 fonts 
 \usepackage{hyperref}       % hyperlinks
 \usepackage{url}            % simple URL typesetting
 \usepackage{booktabs}       % professional-quality tables
-\usepackage{amsfonts}       % blackboard ]math symbols
+\usepackage{amsfonts}       % blackboard math symbols
 \usepackage{nicefrac}       % compact symbols for 1/2, etc.
-\usepackage{microtype}      % microtypography
+\usepackage{microtype}      % microtypography 
 \usepackage{lipsum}		% Can be removed after putting your text content
 \usepackage{graphicx}
 \usepackage[style=apa, natbib=true, backend=biber]{biblatex}
 \usepackage{doi}
+
+\newcommand{\Autoref}[1]{%
+  \begingroup%
+  \def\chapterautorefname{Chapter}%
+  \def\sectionautorefname{Section}%
+  \def\subsectionautorefname{Subsection}%
+  \autoref{#1}%
+  \endgroup%
+}
 
 \addbibresource{references.bib}
 
@@ -33,7 +42,7 @@
 }
 
 \renewcommand{\headeright}{Technical Report}
-\renewcommand{\undertitle}{Technical Report}
+\renewcommand{\undertitle}{Technical Report} 
 \renewcommand{\shorttitle}{Incorporating Blogs in Pollux}
 
 \hypersetup{
@@ -48,7 +57,7 @@ pdfkeywords={political blogs, data crawling, political science, social media},
 \maketitle
 
 \begin{abstract}
-	Considering the broad usage of political blogs in political science research, we decided to include political blogs and blog posts in the search system of Pollux. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and other information in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs which we incorporated into our collection. Furthermore, the pipeline that handles the integration of blogs in Pollux is described.
+    Considering the broad usage of political blogs in political science research, we decided to include political blogs and blog posts in the search system of Pollux. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and other information in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs which we incorporated into our collection. Furthermore, the pipeline that handles the integration of blogs in Pollux is described.
 \end{abstract}
 
 
@@ -56,36 +65,36 @@ pdfkeywords={political blogs, data crawling, political science, social media},
 \keywords{political blogs \and data crawling \and political science \and social media}
 
 \section{Introduction}
-Political blogs are widely used in political science research \citep{wallsten_agenda_2007, coleman_political_2008, wallsten_political_2008, guner_political_2009, akinnubi_deliberative_2023, peng_role_2023}. \citet{coleman_political_2008} claim that communication through political blogs might enhance responsibility and openness of governance overall. \citet{peng_role_2023} examined the process of opinion formation and evolution through the analysis of a larger social network of political blogs. \citet{wallsten_political_2008} investigated how political bloggers utilize their platforms focusing on their predominant function: expressing opinions, mobilizing, seeking feedback, or disseminating information. \citet{demasi_analysing_2020} studied the usage of political blogs by right politicians for political communication and persuasion. \citet{balakhonskaya_communicative_2020} examined strategies for discrediting opponents in the Russian political blogosphere.
+Political blogs are widely used in political science research \citep{wallsten_agenda_2007, coleman_political_2008, wallsten_political_2008, guner_political_2009, akinnubi_deliberative_2023, peng_role_2023}. \citet{coleman_political_2008} claim that communication through political blogs might enhance the responsibility and openness of governance overall. \citet{peng_role_2023} examined the process of opinion formation and evolution through the analysis of a larger social network of political blogs. \citet{wallsten_political_2008} investigated how political bloggers utilize their platforms focusing on their predominant function: expressing opinions, mobilizing, seeking feedback, or disseminating information. \citet{demasi_analysing_2020} studied the usage of political blogs by right-wing politicians for political communication and persuasion. \citet{balakhonskaya_communicative_2020} examined strategies for discrediting opponents in the Russian political blogosphere.
 
-Considering the broad usage of political blogs in political science research, we decided to include political blogs in the search index of Pollux \footnote{\url{https://www.pollux-fid.de/}}. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and information infrastructure in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs we included in our collection. Section 2 explains the generation of the list of RSS feeds used for incorporating blogs in Pollux. Section 3 describes findings from the collected RSS feeds that motivated the decision of how to implement into Pollux. Section 4 provides a detailed description of the procedure that handles the integration of blogs in Pollux.
+Considering the broad usage of political blogs in political science research, we decided to include political blogs in the search index of Pollux \footnote{\url{https://www.pollux-fid.de/}}. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and information infrastructure in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs we included in our collection. \Autoref{sec:sourcing} explains the generation of the list of RSS feeds used for incorporating blogs in Pollux. \Autoref{sec:analysis} describes findings from the collected RSS feeds that motivated the decision of how to implement them into Pollux. \Autoref{sec:incorporation} provides a detailed description of the procedure that handles the integration of blogs in Pollux. \Autoref{sec:Visualization} shows visualizations of the topics included in the incorporated blogs posts.
 
 \section{Sourcing of RSS Feeds}\label{sec:sourcing}
 In this section, the generation of the list of RSS feeds used for incorporating blogs in Pollux is described. A graphical overview of the process is provided in \autoref{fig:rss_generation}.
 
 \begin{figure}[htb]
-	\centering
-	\includegraphics[width=.7\textwidth]{figures/generation_of_initial_list.png}
-	\caption{Pipeline for initial blog list generation.}
-	\label{fig:rss_generation}
+    \centering
+    \includegraphics[width=.7\textwidth]{figures/generation_of_initial_list.png}
+    \caption{Pipeline for initial blog list generation.}
+    \label{fig:rss_generation}
 \end{figure}
 
 % url list
-We use lists of URLs with relevant political science blogs provided by SUUB and GESIS. The list are parsed, tested for dead links and then filtered to deduplicate and fix subdomain inconsistencies between the lists.
+We use lists of URLs with relevant political science blogs provided by SUUB and GESIS. The lists are parsed, tested for dead links and then filtered to deduplicate and fix subdomain inconsistencies between the lists.
 
-% rss list automatic
-To get a RSS list from the URL list we design a Python script for identifying RSS feeds on webpages. It reads a list of URLs from a CSV file, sends a GET request to each URL, and uses a regular expression to find any RSS feed links in the HTML of the page. The regular expression is designed to match the \texttt{href} attribute of link elements with \texttt{rel="alternate"} and \texttt{type="application/rss+xml"}, which is a common way to specify an RSS feed on a webpage. Finally, a dictionary containing the original URL, the response status code, the content type of the response, and the list of RSS feed links. This is written to a JSON file, which is used for the analysis of the RSS feeds, as well as, the later integration into the Pollux database.
+% rss list automatic 
+To get an RSS list from the URL list, we designed a Python script for identifying RSS feeds on webpages. It reads a list of URLs from a CSV file, sends a GET request to each URL, and uses a regular expression to find any RSS feed links in the HTML of the page. The regular expression is designed to match the \texttt{href} attribute of link elements with \texttt{rel="alternate"} and \texttt{type="application/rss+xml"}, which is a common way to specify an RSS feed on a webpage. Finally, a dictionary containing the original URL, the response status code, the content type of the response, and the list of RSS feed links is written to a JSON file, which is used for the analysis of the RSS feeds, as well as the later integration into the Pollux database.
 
 % rss list manual
-After the automatic rss feed detection, the remaining feed is checked manually. Like in the automatic checking the HTML of the URL is used. We looks for boarder patterns like an "rss" string appearing in a link on the page. After that, we check the remaining URLs by visiting the website and searching for visual information like a RSS feed logo. The additional RSS feeds identified this way are added to the automatically detected ones, providing a JSON file as seen in \autoref{code:rss_list_json}.
+After the automatic RSS feed detection, the remaining feeds are checked manually. Like in the automatic checking, the HTML of the URL is used. We look for broader patterns like an "rss" string appearing in a link on the page. After that, we check the remaining URLs by visiting the website and searching for visual information like an RSS feed logo. The additional RSS feeds identified this way are added to the automatically detected ones, providing a JSON file as seen in \autoref{code:rss_list_json}.
 \begin{figure}[htb]
-	\includegraphics[width=.7\textwidth]{figures/rss_list_json.png}
-	\caption{Two entries in JSON after retrieving RSS feeds from URLs.}
-	\label{code:rss_list_json}
+    \includegraphics[width=.7\textwidth]{figures/rss_list_json.png}
+    \caption{Two entries in JSON after retrieving RSS feeds from URLs.}
+    \label{code:rss_list_json}
 \end{figure}
 
 % downloading
-To analyze the feeds later, we downloaded the rss feeds each week for seven months from July 2022 to February 2023. We designed a Python script for this propose that was run every week. The script downloads and save RSS feeds from the list generated earlier. The feed content is saved, as well as, metadata like the timestamp, status code, and content type. If an error occurs during a request, the accompanying error message is stored.
+To analyze the feeds later, we downloaded the RSS feeds each week for seven months from July 2022 to February 2023. We designed a Python script for this purpose that was run every week. The script downloads and saves RSS feeds from the list generated earlier. The feed content is saved, as well as metadata like the timestamp, status code, and content type. If an error occurs during a request, the accompanying error message is stored.
 
 \section{Analysis of Initial Blog Data}\label{sec:analysis}
 
@@ -115,7 +124,7 @@ At the feed level, not much metadata is transmitted. However, the metadata that 
 \end{table}
 
 % entry level
-% entry structure: title, author, publication date, link (for access option), summary for abstracts, 
+% entry structure: title, author, publication date, link (for access option), summary for abstracts,  
 For an overview of the entry-level data that we parsed from the RSS feed, see \autoref{tab:entry_structure}. The entry level has more metadata available, even including a field for the content of the blog. However, the quality and availability of data are worse. The \textit{title} is always available and has mostly good quality, with some titles being overly long and some not including the actual title but rather a "not available" statement. Important metadata like \textit{link} and \textit{publication date} had good quality as well. Other data was more spotty; \textit{content} often includes HTML artifacts and had very inconsistent content, with some entries having their entire blog post in the field and others just the first sentence. On the other hand, the \textit{summary} field is available for all entries and has more consistent quality. Therefore, we use the summary rather than the content as the displayed "abstract" in Pollux. The \textit{tags} and \textit{comments} fields provide interesting metadata. With tags, the blog entries can be categorized into different subsets, and comments can be used to build some kind of popularity metric. However, comments have a very low inclusion rate at 33\% and are therefore not reliable enough for a metric, and the amount and kind of tags differ heavily for different entries, making them less useful than an automatic topic generation based on the summary.
 \begin{table}[htb]
     \caption{\textbf{Entry Structure.} XML elements (fields) that were most often included in the RSS responses at the entry level.}
@@ -125,23 +134,22 @@ For an overview of the entry-level data that we parsed from the RSS feed, see \a
         \cmidrule(r){1-2}
         \textbf{Field}   & \textbf{Inclusion} & \textbf{Example}                                          \\
         \midrule
-        title            & 100\%             & \verb|The 2022 Midterms: In the Senate elections, [...] | \\
-        id               & 100\%             & \verb|https://blogs.lse.ac.uk/usappblog/?p=47109        | \\
-        link             & 100\%             & \verb|https://blogs.lse.ac.uk/usappblog/2022/11/  [...] | \\
-        publication date & 96\%              & \verb|2022-11-16 09:57:58|                                \\
-        authors          & 84\%              & \verb|Blog|                                               \\
-        summary          & 100\%             & \verb|In this year\&\#8217;s midterm elections,   [...] | \\
-        content          & 65\%              & \verb|a class="a2a_button_twitter" href="https: [...] | \\
-        tags             & 65\%              & \verb|2022 Midterms’, 'Elections and party politi [...] | \\
-        comments         & 33\%              & \verb|https://blogs.lse.ac.uk/usappblog/2022/11/16[...] | \\
+        title            & 100\%              & \verb|The 2022 Midterms: In the Senate elections, [...] | \\
+        id               & 100\%              & \verb|https://blogs.lse.ac.uk/usappblog/?p=47109        | \\
+        link             & 100\%              & \verb|https://blogs.lse.ac.uk/usappblog/2022/11/  [...] | \\
+        publication date & 96\%               & \verb|2022-11-16 09:57:58|                                \\
+        authors          & 84\%               & \verb|Blog|                                               \\
+        summary          & 100\%              & \verb|In this year\&\#8217;s midterm elections,   [...] | \\
+        content          & 65\%               & \verb|a class="a2a_button_twitter" href="https: [...] |   \\
+        tags             & 65\%               & \verb|2022 Midterms', 'Elections and party politi [...] | \\
+        comments         & 33\%               & \verb|https://blogs.lse.ac.uk/usappblog/2022/11/16[...] | \\
         \bottomrule
     \end{tabular}
     \label{tab:entry_structure}
 \end{table}
 
-% implementation idea
+% implementation idea 
 Since we have high-quality data both at the feed and entry levels, we can use them for two distinct types of records in Pollux. As Pollux is designed as a database for academic research, we can use the preexisting structure of paper and journal records as a template for blog entry and feed records.
-
 
 \section{Incorporation into the Pollux Pipeline}\label{sec:incorporation}
 
@@ -149,9 +157,9 @@ In this section, a detailed description of the pipeline that handles the integra
 
 \subsection{Downloading RSS Feeds}
 
-The Python script, \texttt{rss\_downloader.py} is designed to download and store RSS feeds from a list of URLs. It does this through a series of functions that each handle a specific part of the process.
+The Python script, \texttt{rss\_downloader.py}, is designed to download and store RSS feeds from a list of URLs. It does this through a series of functions that each handle a specific part of the process.
 
-The \texttt{run} function is the main function that get called to initiate the process. It reads in a list of RSS feed URLs, shuffles the list to avoid querying the same domain consecutively, and then attempts to download each feed. If a feed is successfully downloaded, its metadata is stored. If a feed cannot be downloaded, its URL is added to a list of error URLs. The function then saves the metadata of all downloaded feeds to a JSON file and returns a \texttt{Result} object containing metrics about the number of feeds downloaded and the number of errors, as well as the error URLs.
+The \texttt{run} function is the main function that gets called to initiate the process. It reads in a list of RSS feed URLs, shuffles the list to avoid querying the same domain consecutively, and then attempts to download each feed. If a feed is successfully downloaded, its metadata is stored. If a feed cannot be downloaded, its URL is added to a list of error URLs. The function then saves the metadata of all downloaded feeds to a JSON file and returns a \texttt{Result} object containing metrics about the number of feeds downloaded and the number of errors, as well as the error URLs.
 
 Multiple helper functions are used in the process. The \texttt{extract\_feed\_urls} function reads in a JSON file containing blog information and extracts a list of unique RSS feed URLs. It expects the JSON file to contain a list of dictionaries, each with a key \texttt{rss\_links} that maps to a list of URLs. The function returns the list of unique URLs.
 
@@ -161,38 +169,38 @@ The \texttt{get} function handles the GET request used above. It sends a GET req
 
 \subsection{Converting RSS Feeds}
 
-The Python script, \texttt{rss\_converter.py}, is designed to parse and convert RSS feeds and their entries into a the format used by Pollux entries. It does this through a series of functions that each handle a specific part of the process.
+The Python script, \texttt{rss\_converter.py}, is designed to parse and convert RSS feeds and their entries into the format used by Pollux entries. It does this through a series of functions that each handle a specific part of the process.
 
-The \texttt{run} function is the main function that get called to initiate the process. It reads in a dump of RSS feeds, parses the feeds and their entries, splits the feeds and entries into blog and comment data, converts the blog feeds and entries into a specific format, and returns the converted data along with some metrics and logs.
+The \texttt{run} function is the main function that gets called to initiate the process. It reads in a dump of RSS feeds, parses the feeds and their entries, splits the feeds and entries into blog and comment data, converts the blog feeds and entries into a specific format, and returns the converted data along with some metrics and logs.
 
 The \texttt{parse\_rss\_dump} function parses the RSS feeds and their entries. It adds additional information from the metadata to each feed and entry.
 The \texttt{split\_comments} function separates the blog data from the comment data based on the URL of the feed or entry.
 
 The \texttt{convert\_feed} and \texttt{convert\_entry} functions convert a feed or an entry into the Pollux entry format. They call several helper functions to get specific pieces of information from the feed or entry.
-Ten different helper functions in the format \texttt{get\_<field>} parse the blog information. For example, the \texttt{get\_languages} function converts the BCP 47 language code found in the RSS to an ISO 639-3 language code. For detailed information of the function see the accompanying source code.
+Ten different helper functions in the format \texttt{get\_<field>} parse the blog information. For example, the \texttt{get\_languages} function converts the BCP 47 language code found in the RSS to an ISO 639-3 language code. For detailed information on the functions, see the accompanying source code.
 
-\section{Analysis of incorporated Blogs Posts}
-After the integration of the pipeline into Pollux (see \autoref{appendix:website} and \citet{czolkoss-hettwerPolitikwissenschaftlicheBlogsSichtbar2023} for the website layout), we analyze the incorporated Blogs. Integration started in July 2023 and we analyze Blog entries until October 2023. We analyze the topics of the blogs entries by fitting a topic model on the \texttt{summary} field of the entries. Before, the fitting we translated all summaries into English to make the topic model, as we want to focus on the areas the blogs cover as opposed to language difference. We additionally use the \texttt{publication date} field to visualize topics over time.
+\section{Topics of incorporated Blog Posts}\label{sec:Visualization}
+After the integration of the pipeline into Pollux (see \autoref{appendix:website} and \citet{czolkoss-hettwerPolitikwissenschaftlicheBlogsSichtbar2023} for the website layout), we analyze the incorporated blogs. Integration started in July 2023 and we analyze blog entries until October 2023. We analyze the topics of the blog entries by fitting a topic model on the \texttt{summary} field of the entries. Before fitting the model, we translated all summaries into English to make the topic model consistent, as we want to focus on the areas the blogs cover as opposed to language differences. We additionally use the \texttt{publication date} field to visualize topics over time.
 
-\paragraph{BERTopic.} 
-BERTopics \citep{grootendorstBERTopicNeuralTopic2022} is a topic modeling technique that combines BERT (Bidirectional Encoder Representations from Transformers) with classical topic modeling methods. It leverages the power of BERT embeddings to represent documents and then applies topic modeling algorithms to discover latent topics within the document collection.
-BERTopics provides several methods to visualize the discovered topics and the documents associated with them. We visualize document level relationships and topics over time.
+\paragraph{BERTopic.}
+BERTopic \citep{grootendorstBERTopicNeuralTopic2022} is a topic modeling technique that combines BERT (Bidirectional Encoder Representations from Transformers) with classical topic modeling methods. It leverages the power of BERT embeddings to represent documents and then applies topic modeling algorithms to discover latent topics within the document collection.
+BERTopic provides several methods to visualize the discovered topics and the documents associated with them. We visualize document level relationships and topics over time.
 
 \paragraph{Document visualization.}
-Using the fitted topic model we visualize the documents in the context of the discovered topics, see \autoref{fig:topic_viz_2d}. We plot the documents in a two-dimensional space, where each document is represented as a point. The position of the documents is determined by their topic distribution, so documents with similar topic distributions will be clustered together. This visualization helps in understanding the relationships between documents based on their topic assignments. We can see that the upper halve of the visualization is dominated by US-centric topics like the supreme court, monetary policy, and advanced in AI. The middle includes topics as the corona virus and climate change, which matter globally. The bottom halve includes topics concerning the European Union, german newspapers and the war in ukraine, which are more relevant in Europe.
+Using the fitted topic model, we visualize the documents in the context of the discovered topics, see \autoref{fig:topic_viz_2d}. We plot the documents in a two-dimensional space, where each document is represented as a point. The position of the documents is determined by their topic distribution, so documents with similar topic distributions will be clustered together. This visualization helps in understanding the relationships between documents based on their topic assignments. We can see that the upper half of the visualization is dominated by US-centric topics like the Supreme Court, monetary policy, and advances in AI. The middle includes topics such as the coronavirus and climate change, which matter globally. The bottom half includes topics concerning the European Union, German newspapers and the war in Ukraine, which are more relevant in Europe.
 
 \begin{figure}[!htb]
-	\includegraphics[width=1.0\textwidth]{figures/topic_viz_2d.png}
-	\caption{BERTopic visualization of blog entries incorporated in Pollux. The Scatterplot shows embeddings for each blog entry reduced to a 2-dimensional space. The summaries of the entries was used to create the embeddings. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topic_viz_2d.html})}
-	\label{fig:topic_viz_2d}
+    \includegraphics[width=1.0\textwidth]{figures/topic_viz_2d.png}
+    \caption{BERTopic visualization of blog entries incorporated in Pollux. The scatterplot shows embeddings for each blog entry reduced to a 2-dimensional space. The summaries of the entries were used to create the embeddings. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topic_viz_2d.html})}
+    \label{fig:topic_viz_2d}
 \end{figure}
 
 \paragraph{Over time visualization.}
-We use the publication date of the blog entries to show the trend of topics over time, see \autoref{fig:topics_over_time.png}. The dates are grouped into two month intervals the make the plot more interpretable. The number of blogs included for dates before the incorporation into Pollux differs from blog to blog, as the number of records per RSS request is individual for each feed and the frequency of new blogs per feed varies widely. For the visualization we pick topics that should vary in relevance over time. We see that the blogs cover important political events like the corona pandemic or the war in ukraine. We see the expected temporal development, where covid is the dominating topi throughout 2020 and 2021 and with events like the russian invasion of ukraine spiking at the start of 2022 and the AI related blogs increasing around the time of the release of ChatGPT in November 2022.
+We use the publication date of the blog entries to show the trend of topics over time, see \autoref{fig:topics_over_time.png}. The dates are grouped into two month intervals to make the plot more interpretable. The number of blogs included for dates before the incorporation into Pollux differs from blog to blog, as the number of records per RSS request is individual for each feed and the frequency of new blogs per feed varies widely. For the visualization, we pick topics that should vary in relevance over time. We see that the blogs cover important political events like the coronavirus pandemic or the war in Ukraine. We see the expected temporal development, where COVID is the dominating topic throughout 2020 and 2021, with events like the Russian invasion of Ukraine spiking at the start of 2022 and the AI-related blogs increasing around the time of the release of ChatGPT in November 2022.
 
 \begin{figure}[!htb]
     \includegraphics[width=1.0\textwidth]{figures/topics_over_time.png}
-    \caption{BERTopic visualization of blogs entry topics over time. The topics are based on the summaries of the entries. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topics_over_time.html})}
+    \caption{BERTopic visualization of blog entry topics over time. The topics are based on the summaries of the entries. (Interactive plot at \url{https://tobihol.github.io/pollux-rss-blogs/content_analysis/topics_over_time.html})}
     \label{fig:topics_over_time.png}
 \end{figure}
 
@@ -212,7 +220,7 @@ We thank \href{https://orcid.org/0000-0002-6656-1658}{\includegraphics[scale=0.0
 \end{figure}
 
 \begin{figure}[ht]
-   \includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png} % Second image
+    \includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png} % Second image
     \caption{View of a blog entry on Pollux.}
     \label{fig:pollux_web_blog_entry}
 \end{figure}
