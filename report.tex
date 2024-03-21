@@ -101,7 +101,6 @@ To analyze the feeds later, we downloaded the RSS feeds each week for seven mont
 After generating the initial feed data, we analyzed the resulting 290 feeds and the total of 22,739 entries to identify which metadata is available and to assess the quality of the available metadata.
 
 % feed level
-% feed structure included later: title, language, subtitle (used as abstract), link (for access option)
 For an overview of the feed-level data that we parsed from the RSS feed, see \autoref{tab:feed_structure}.
 At the feed level, not much metadata is transmitted. However, the metadata that is available is included in almost all feeds and can therefore be used for information in Pollux. The fields mostly contained high-quality data, with only the \textit{subtitle} field showing some inconsistencies, as some feeds had considerably longer entries than others. Therefore, we were able to use all the shown field data in the Pollux integration.
 \begin{table}[htb]
@@ -124,7 +123,6 @@ At the feed level, not much metadata is transmitted. However, the metadata that 
 \end{table}
 
 % entry level
-% entry structure: title, author, publication date, link (for access option), summary for abstracts,  
 For an overview of the entry-level data that we parsed from the RSS feed, see \autoref{tab:entry_structure}. The entry level has more metadata available, even including a field for the content of the blog. However, the quality and availability of data are worse. The \textit{title} is always available and has mostly good quality, with some titles being overly long and some not including the actual title but rather a "not available" statement. Important metadata like \textit{link} and \textit{publication date} had good quality as well. Other data was more spotty; \textit{content} often includes HTML artifacts and had very inconsistent content, with some entries having their entire blog post in the field and others just the first sentence. On the other hand, the \textit{summary} field is available for all entries and has more consistent quality. Therefore, we use the summary rather than the content as the displayed "abstract" in Pollux. The \textit{tags} and \textit{comments} fields provide interesting metadata. With tags, the blog entries can be categorized into different subsets, and comments can be used to build some kind of popularity metric. However, comments have a very low inclusion rate at 33\% and are therefore not reliable enough for a metric, and the amount and kind of tags differ heavily for different entries, making them less useful than an automatic topic generation based on the summary.
 \begin{table}[htb]
     \caption{\textbf{Entry Structure.} XML elements (fields) that were most often included in the RSS responses at the entry level.}
@@ -214,13 +212,13 @@ We thank \href{https://orcid.org/0000-0002-6656-1658}{\includegraphics[scale=0.0
 \section{Representation of Blogs on the Pollux Website}\label{appendix:website}
 
 \begin{figure}[ht]
-    \includegraphics[width=\textwidth]{figures/pollux_web_search_bar.png} % First image
+    \includegraphics[width=\textwidth]{figures/pollux_web_search_bar.png}
     \caption{View of the search interface on Pollux when searching for "klimakrise".}
     \label{fig:pollux_web_search_bar}
 \end{figure}
 
 \begin{figure}[ht]
-    \includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png} % Second image
+    \includegraphics[width=\textwidth]{figures/pollux_web_blog_entry.png}
     \caption{View of a blog entry on Pollux.}
     \label{fig:pollux_web_blog_entry}
 \end{figure}
