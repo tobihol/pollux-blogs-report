@@ -57,7 +57,7 @@ pdfkeywords={political blogs, data crawling, political science, social media},
 \maketitle
 
 \begin{abstract}
-    This technical report describes the process of incorporating political blogs into Pollux, the Specialised Information Service (FID) for Political Science in Germany. Considering the widespread use of political blogs in political science research, we decided to include them in the Pollux search system to enhance the available information infrastructure. We describe the crawling procedure and analysis of political blogs which we incorporated into our collection. Furthermore, the pipeline that handles the integration of blogs in Pollux is described. Additionally, we provide a topic visualization of the blog post that were available in Pollux three months after  the integration was implemented.
+    This technical report describes the incorporation of political blogs into Pollux, the Specialised Information Service (FID) for Political Science in Germany. Considering the widespread use of political blogs in political science research, we decided to include them in the Pollux search system to enhance the available information infrastructure. We describe the crawling and analyzing of the blogs and the pipeline that integrates them into the Pollux system. To demonstrate the content of the incorporated blogs, we also provide a visualization of the topics covered by the blog posts during the first three months following integration.
 \end{abstract}
 
 
@@ -65,7 +65,7 @@ pdfkeywords={political blogs, data crawling, political science, social media},
 \keywords{political blogs \and data crawling \and political science \and social media}
 
 \section{Introduction}
-Political blogs are widely used in political science research \citep{wallsten_agenda_2007, coleman_political_2008, wallsten_political_2008, guner_political_2009, akinnubi_deliberative_2023, peng_role_2023}. \citet{coleman_political_2008} claim that communication through political blogs might enhance the responsibility and openness of governance overall. \citet{peng_role_2023} examined the process of opinion formation and evolution through the analysis of a larger social network of political blogs. \citet{wallsten_political_2008} investigated how political bloggers utilize their platforms, focusing on their predominant function: expressing opinions, mobilizing, seeking feedback, or disseminating information. \citet{demasi_analysing_2020} studied the usage of political blogs by right-wing politicians for political communication and persuasion. \citet{balakhonskaya_communicative_2020} examined strategies for discrediting opponents in the Russian political blogosphere.
+Political blogs are widely used in political science research \citep{wallsten_agenda_2007, coleman_political_2008, wallsten_political_2008, guner_political_2009, akinnubi_deliberative_2023, peng_role_2023}. \citet{coleman_political_2008} claim that communication through political blogs might enhance the responsibility and openness of governance overall. \citet{peng_role_2023} examined the process of opinion formation and evolution by analyzing a larger social network of political blogs. \citet{wallsten_political_2008} investigated how political bloggers utilize their platforms, focusing on their predominant function: expressing opinions, mobilizing, seeking feedback, or disseminating information. \citet{demasi_analysing_2020} studied the usage of political blogs by right-wing politicians for political communication and persuasion. \citet{balakhonskaya_communicative_2020} examined strategies for discrediting opponents in the Russian political blogosphere.
 
 Considering the broad usage of political blogs in political science research, we decided to include political blogs in the search index of Pollux \footnote{\url{https://www.pollux-fid.de/}}. Pollux is the Specialised Information Service (FID) for Political Science, which provides literature and information infrastructure in the field of political science in Germany. The following technical report explains the crawling procedure and analysis of political blogs we included in our collection. \Autoref{sec:sourcing} explains the generation of the list of RSS feeds used for incorporating blogs in Pollux. \Autoref{sec:analysis} describes findings from the collected RSS feeds that motivated the decision of how to implement them into Pollux. \Autoref{sec:incorporation} provides a detailed description of the procedure that handles the integration of blogs in Pollux. \Autoref{sec:Visualization} shows visualizations of the topics included in the incorporated blog posts.
 
@@ -94,15 +94,15 @@ After the automatic RSS feed detection, the remaining feeds are checked manually
 \end{figure}
 
 % downloading
-To analyze the feeds later, we downloaded the RSS feeds each week for seven months, from July 2022 to February 2023. We designed a Python script for this purpose that was run every week. The script downloads and saves RSS feeds from the list generated earlier. The feed content and metadata, such as the timestamp, status code, and content type, are saved. If an error occurs during a request, the accompanying error message is stored.
+To analyze the feeds later, we downloaded the RSS feeds each week for seven months, from July 2022 to February 2023. We designed a Python script for this purpose that was executed once per week. The script downloads and saves RSS feeds from the list generated earlier. The feed content and metadata, such as the timestamp, status code, and content type, were saved. If an error occurs during a request, the request is retried multiple times.
 
 \section{Analysis of Initial Blog Data}\label{sec:analysis}
 
-After generating the initial feed data, we analyzed the resulting 290 feeds and the total of 22,739 entries to identify which metadata is available and to assess the quality of the available metadata.
+After generating the initial feed data, we analyzed the resulting 290 feeds and 22,739 entries to identify which metadata is available and assess the quality of the available metadata.
 
 % feed level
-For an overview of the feed-level data that we parsed from the RSS feed, see \autoref{tab:feed_structure}.
-At the feed level, only a little metadata is transmitted. However, the available metadata is included in almost all feeds and can, therefore, be used for information in Pollux. The fields mostly contained high-quality data, with only the \textit{subtitle} field showing some inconsistencies, as some feeds had considerably longer entries than others. Therefore, we were able to use all the shown field data in the Pollux integration.
+For an overview of the feed-level data we parsed from the RSS feed, see \autoref{tab:feed_structure}.
+At the feed level, only a little metadata is transmitted. However, the available metadata is included in almost all feeds and can, therefore, be used as information in Pollux. The fields mostly contained high-quality data, with only the \textit{subtitle} field showing some inconsistencies, as some feeds had considerably longer entries than others. Therefore, we were able to use all the shown field data in the Pollux integration.
 \begin{table}[htb]
     \caption{\textbf{Feed Structure.} XML elements (fields) that were most often included in the RSS responses at the feed level.}
     \centering
@@ -123,7 +123,7 @@ At the feed level, only a little metadata is transmitted. However, the available
 \end{table}
 
 % entry level
-For an overview of the entry-level data we parsed from the RSS feed, see \autoref{tab:entry_structure}. The entry level has more metadata available, even including a field for the content of the blog. However, the quality and availability of data are worse. The \textit{title} is always available and has mostly good quality, with some titles being overly long and some not including the actual title but rather a "not available" statement. Important metadata like \textit{link} and \textit{publication date} had good quality as well. Other data was more spotty; \textit{content} often includes HTML artifacts and had very inconsistent content, with some entries having their entire blog post in the field and others just the first sentence. On the other hand, the \textit{summary} field is available for all entries and has more consistent quality. Therefore, we use the summary rather than the content as the displayed "abstract" in Pollux. The \textit{tags} and \textit{comments} fields provide interesting metadata. With tags, the blog entries can be categorized into different subsets, and comments can be used to build some kind of popularity metric. However, comments have a very low inclusion rate at 33\% and are therefore not reliable enough for a metric, and the amount and kind of tags differ heavily for different entries, making them less useful than an automatic topic generation based on the summary.
+For an overview of the entry-level data we parsed from the RSS feed, see \autoref{tab:entry_structure}. The entry level has more metadata available, sometimes even including the whole blog post in the content field. However, the quality and availability of data are worse. The \textit{title} is always available and has mostly good quality, with some titles being overly long and some not including the actual title but rather a "not available" statement. Important metadata like \textit{link} and \textit{publication date} also had good quality. Other metadata was more spotty; \textit{content} often includes HTML artifacts and had inconsistent content, with some entries having their entire blog post in the field and others just the first sentence. On the other hand, the \textit{summary} field is available for all entries and has more consistent quality. Therefore, we use the summary rather than the content as the displayed "abstract" in Pollux. The \textit{tags} and \textit{comments} fields provide interesting metadata. With tags, the blog entries can be categorized into different subsets, and comments can be used to build some kind of popularity metric. However, comments have a very low inclusion rate at 33\% and are therefore not reliable enough for a metric. The amount and kind of tags differ heavily for different entries, making them less valuable than an automatic topic generation based on the summary.
 \begin{table}[htb]
     \caption{\textbf{Entry Structure.} XML elements (fields) that were most often included in the RSS responses at the entry level.}
     \centering
@@ -147,11 +147,11 @@ For an overview of the entry-level data we parsed from the RSS feed, see \autore
 \end{table}
 
 % implementation idea 
-Since we have high-quality data both at the feed and entry levels, we can use them for two distinct types of records in Pollux. As Pollux is designed as a database for academic research, we can use the preexisting structure of paper and journal records as a template for blog entry and feed records.
+Since we have high-quality data both at the feed and entry levels, we can use them for two distinct types of records in Pollux. As Pollux is designed as a database for academic research, we can use the preexisting structure of paper and journal records as a template for entry and feed records.
 
 \section{Incorporation into the Pollux Pipeline}\label{sec:incorporation}
 
-In this section, a detailed description of the pipeline that handles the integration of blogs in Pollux is provided.
+This section provides a detailed description of the pipeline that handles the integration of blogs in Pollux.
 
 \subsection{Downloading RSS Feeds}
 
@@ -178,14 +178,14 @@ The \texttt{convert\_feed} and \texttt{convert\_entry} functions convert a feed 
 Ten different helper functions in the format \texttt{get\_<field>} parse the blog information. For example, the \texttt{get\_languages} function converts the BCP 47 language code found in the RSS to an ISO 639-3 language code. For detailed information on the functions, see the accompanying source code.
 
 \section{Topics of incorporated Blog Posts}\label{sec:Visualization}
-After the integration of the pipeline into Pollux (see \autoref{appendix:website} and \citet{czolkoss-hettwerPolitikwissenschaftlicheBlogsSichtbar2023} for the website layout), we analyze the incorporated blogs. Integration started in July 2023, and we analyzed blog entries until October 2023. We analyze the topics of the blog entries by fitting a topic model on the \texttt{summary} field of the entries. Before fitting the model, we translated all summaries into English to make the topic model consistent, as we want to focus on the areas the blogs cover as opposed to language differences. We additionally use the \texttt{publication date} field to visualize topics over time.
+After the integration of the pipeline into Pollux (see \autoref{appendix:website} and \citet{czolkoss-hettwerPolitikwissenschaftlicheBlogsSichtbar2023} for the website layout), we analyze the incorporated blogs. Integration started in July 2023, and we analyzed blog entries until October 2023. We analyze the topics of the blog entries by fitting a topic model on the \texttt{summary} field of the entries. Before fitting the model, we translated all summaries into English to make the topic model consistent, as we want to focus on the areas the blogs cover instead of language differences. We additionally use the \texttt{publication date} field to visualize topics over time.
 
 \paragraph{BERTopic.}
 BERTopic \citep{grootendorstBERTopicNeuralTopic2022} is a topic modeling technique that combines BERT (Bidirectional Encoder Representations from Transformers) with classical topic modeling methods. It leverages the power of BERT embeddings to represent documents and then applies topic modeling algorithms to discover latent topics within the document collection.
-BERTopic provides several methods to visualize the discovered topics and the documents associated with them. We visualize document level relationships and topics over time.
+BERTopic provides several methods for visualizing the discovered topics and the documents associated with them. We visualize document-level relationships and topics over time.
 
 \paragraph{Document visualization.}
-Using the fitted topic model, we visualize the documents in the context of the discovered topics, see \autoref{fig:topic_viz_2d}. We plot the documents in a two-dimensional space, where each document is represented as a point. The position of the documents is determined by their topic distribution, such that documents with similar topic distributions will be clustered together. This visualization helps in understanding the relationships between documents based on their topic assignments. We can see that US-centric topics like the Supreme Court, monetary policy, and AI advances dominate the visualization's upper half. The middle includes topics such as the coronavirus and climate change, which matter globally. The bottom half includes topics concerning the European Union, German newspapers, and the war in Ukraine, which are more relevant in Europe.
+Using the fitted topic model, we visualize the documents in the context of the discovered topics, see \autoref{fig:topic_viz_2d}. We plot the documents in a two-dimensional space, representing each as a point. The position of the documents is determined by their topic distribution, such that documents with similar topic distributions will be clustered together. This visualization helps understand the relationships between documents based on their topic assignments. We can see that US-centric topics like the Supreme Court, monetary policy, and AI advances dominate the visualization's upper half. The middle includes topics such as the coronavirus and climate change, which matter globally. The bottom half includes topics concerning the European Union, German newspapers, and the war in Ukraine, which are more relevant in Europe.
 
 \begin{figure}[!htb]
     \includegraphics[width=1.0\textwidth]{figures/topic_viz_2d.png}
@@ -194,7 +194,7 @@ Using the fitted topic model, we visualize the documents in the context of the d
 \end{figure}
 
 \paragraph{Over time visualization.}
-We use the publication date of the blog entries to show the trend of topics over time; see \autoref{fig:topics_over_time.png}. The dates are grouped into two-month intervals to make the plot more interpretable. The number of blogs included for dates before the incorporation into Pollux differs from blog to blog, as the number of records per RSS request is individual for each feed, and the frequency of new blogs per feed varies widely. For the visualization, we pick topics that should vary in relevance over time. We see that the blogs cover important political events like the coronavirus pandemic or the war in Ukraine. We see the expected temporal development, where COVID is the dominating topic throughout 2020 and 2021, with events like the Russian invasion of Ukraine spiking at the start of 2022 and the AI-related blogs increasing around the time of the release of ChatGPT in November 2022.
+We use the publication date of the blog entries to show the trend of topics over time; see \autoref{fig:topics_over_time.png}. The dates are grouped into two-month intervals to make the plot more interpretable. The number of blogs included for dates before the incorporation into Pollux differs from blog to blog, as the number of records per RSS request is individual for each feed, and the frequency of new blogs per feed varies widely. For the visualization, we pick topics that should vary in relevance over time. The blogs cover important political events like the coronavirus pandemic or the war in Ukraine. We see the expected temporal development, where COVID is the dominating topic throughout 2020 and 2021, with events like the Russian invasion of Ukraine spiking at the start of 2022 and the AI-related blogs increasing around the time of the release of ChatGPT in November 2022.
 
 \begin{figure}[!htb]
     \includegraphics[width=1.0\textwidth]{figures/topics_over_time.png}
@@ -204,7 +204,7 @@ We use the publication date of the blog entries to show the trend of topics over
 
 \section*{Acknowledgements}
 This work was funded by Deutsche Forschungsgemeinschaft (DFG) under grant number MA 3964/7-2, the POLLUX project.
-We thank Marie-Saphira Flug for supporting and reviewing the process of integrating the blogs pipeline into Pollux.
+We thank Marie-Saphira Flug for supporting and reviewing the process of integrating the blog pipeline into Pollux.
 We thank \href{https://orcid.org/0000-0002-6656-1658}{\includegraphics[scale=0.06]{orcid.pdf}Philipp Mayr} for motivating and supporting the write-up of this technical report.
 \printbibliography
 
